@@ -27,55 +27,55 @@ void InitializeAudio(int plln, int pllr, int i2sdiv, int i2sodd) {
 	DMARunning = false;
 
 	// Turn on peripherals.
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);					// Turns on the peripheral for GPIOA
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);					// Turns on the peripheral for GPIOB
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);					// Turns on the peripheral for GPIOC
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);					// Turns on the peripheral for GPIOD
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);					// Turns on the peripheral for DMA1
 
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1, ENABLE);
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI3, ENABLE);
-
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1, ENABLE);					// Turns on the peripheral for I2C communication
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI3, ENABLE);					// Turns on the peripheral for SPI communication
+	
 	// Configure reset pin.
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	GPIO_Init(GPIOD, &GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;;								// refers to pin 4 as pin he's talking to and gives this value to the struct GPIO_InitStructure.
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;							// sets pin 4 as outputs and gives this value to the struct GPIO_InitStructure.
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;							// sets pushpull config for those pins and gives this value to the struct GPIO_InitStructure.
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;						// sets pinspeed and gives this value to the struct GPIO_InitStructure.
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;						// choose no pull resistor and gives this value to the struct GPIO_InitStructure.
+	GPIO_Init(GPIOD, &GPIO_InitStructure);									// initialises port D with the values given to the struct GPIO_InitStructure.
 
 	// Configure I2C SCL and SDA pins.
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_9;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_9;					// refers to pins 6 and 9 as pins he's talking to and gives this value to the struct GPIO_Initstructure.
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;						// sets pinspeed and gives this value to the stuct GPIO_InitStructure.
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;							// sets pins to alternating function to use with I2C communication and gives this value to the struct GPIO_InitStructure.
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;							// sets the output type of the pins to Open Drain and gives this value to the struct GPIO_InitStructure.
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;						// choose no pull resistor and gives this value to the struct GPIO_InitStructure.
+	GPIO_Init(GPIOB, &GPIO_InitStructure);									// initialises port B with the values given to the struct GPIO_InitStructure.
 
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_I2C1);
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource9, GPIO_AF_I2C1);
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_I2C1);					// configuarates pin 6 for the use of I2C communication.
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource9, GPIO_AF_I2C1);					// configuarates pin 9 for the use of I2C communication.
 
 	// Configure I2S MCK, SCK, SD pins.
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_10 | GPIO_Pin_12;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	GPIO_Init(GPIOC, &GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_10 | GPIO_Pin_12;	// refers to pins 7, 10 & 12 as pins he's talking to and gives this value to the sturct GPIO_InitStructure.
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;						// sets pinspeed and gives this value to this struct GPIO_InitStructure.
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;							// sets pins to alternating function to use with I2S communication and gives this value to the struct GPIO_InitStructure.
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;							// sets pushpull config for those pins and gives this value to the struct GPIO_InitStructure.
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;						// choose no pull resistor and gives this value to the struct GPIO_InitStructure.
+	GPIO_Init(GPIOC, &GPIO_InitStructure);									// initialises port C with the values given to the struct GPIO_InitStructure.
 
-	GPIO_PinAFConfig(GPIOC, GPIO_PinSource7, GPIO_AF_SPI3);
-	GPIO_PinAFConfig(GPIOC, GPIO_PinSource10, GPIO_AF_SPI3);
-	GPIO_PinAFConfig(GPIOC, GPIO_PinSource12, GPIO_AF_SPI3);
+	GPIO_PinAFConfig(GPIOC, GPIO_PinSource7, GPIO_AF_SPI3);					// configurates pin 7 of port C for the use of I2S communication.
+	GPIO_PinAFConfig(GPIOC, GPIO_PinSource10, GPIO_AF_SPI3);				// configurates pin 10 of port C for the use of I2S communication.
+	GPIO_PinAFConfig(GPIOC, GPIO_PinSource12, GPIO_AF_SPI3);				// configurates pin 12 of port C for the use of I2S communication.
 
-	// Configure I2S WS pin.
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	// Configure I2S WaveSource pin.
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;								// refers to pin 4 as pin he's talking to and gives this value to the struct GPIO_InitStructure.
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;						// sets pinspeed and gives this value to the struct GPIO_InitStructure.
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;							// sets pint to alternating function and gives this value to the struct GPIO_InitStructure.
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;							// sets pushpull config and gives this value to the struct GPIO_InitStructure.
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;						// choos no pull resistor and gives this value to the struct GPIO_InitStructure.
+	GPIO_Init(GPIOA, &GPIO_InitStructure);									// initialises port A with the values given to the struct GPIO_InitStructure.
 
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource4, GPIO_AF_SPI3);
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource4, GPIO_AF_SPI3);					// configuarates pin 4 on port A to use as WaveSource pin.
 
 	// Reset the codec.
 	GPIOD ->BSRRH = 1 << 4;
