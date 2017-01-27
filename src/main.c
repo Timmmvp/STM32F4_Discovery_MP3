@@ -80,12 +80,12 @@ static void AudioCallback(void *context, int buffer) {
 
 	if (buffer) {
 		samples = audio_buffer0;
-		GPIO_SetBits(GPIOD, GPIO_Pin_13);
-		GPIO_ResetBits(GPIOD, GPIO_Pin_14);
+		GPIO_SetBits(GPIOD, GPIO_Pin_13);												// when buffer0 is active pin_13 is HIGH
+		GPIO_ResetBits(GPIOD, GPIO_Pin_14);												// when buffer0 is active pin_14 is LOW
 	} else {
 		samples = audio_buffer1;
-		GPIO_SetBits(GPIOD, GPIO_Pin_14);
-		GPIO_ResetBits(GPIOD, GPIO_Pin_13);
+		GPIO_SetBits(GPIOD, GPIO_Pin_14);												// when buffer1 is active pin_14 is HIGH
+		GPIO_ResetBits(GPIOD, GPIO_Pin_13);												// when buffer1 is active pin_13 is LOW
 	}
 
 	offset = MP3FindSyncWord((unsigned char*)read_ptr, bytes_left);

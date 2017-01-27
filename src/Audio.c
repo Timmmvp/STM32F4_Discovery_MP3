@@ -36,46 +36,60 @@ void InitializeAudio(int plln, int pllr, int i2sdiv, int i2sodd) {
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1, ENABLE);					// Turns on the peripheral for I2C communication
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI3, ENABLE);					// Turns on the peripheral for SPI communication
 	
+	/* This TypeDef is a structure defined in the
+	 * ST's library and it contains all the properties
+	 * the corresponding peripheral has, such as output mode,
+	 * pullup / pulldown resistors etc.
+	 * 
+	 * These structures are defined for every peripheral so 
+	 * every peripheral has it's own TypeDef. The good news is
+	 * they always work the same so once you've got a hang
+	 * of it you can initialize any peripheral.
+	 * 
+	 * The properties of the periperals can be found in the corresponding
+	 * header file e.g. stm32f4xx_gpio.h and the source file stm32f4xx_gpio.c
+	 */
+	
 	// Configure reset pin.
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;;								// refers to pin 4 as pin he's talking to and gives this value to the struct GPIO_InitStructure.
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;							// sets pin 4 as outputs and gives this value to the struct GPIO_InitStructure.
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;							// sets pushpull config for those pins and gives this value to the struct GPIO_InitStructure.
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;						// sets pinspeed and gives this value to the struct GPIO_InitStructure.
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;						// choose no pull resistor and gives this value to the struct GPIO_InitStructure.
-	GPIO_Init(GPIOD, &GPIO_InitStructure);									// initialises port D with the values given to the struct GPIO_InitStructure.
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;;								// we want to configure PD4
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;							// we want the pin to be an output 
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;							// this sets the pin type to push / pull (as opposed to open drain)
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;						// this sets the GPIO modules clock speed
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;						// this sets the pullup / pulldown resistors to be inactive
+	GPIO_Init(GPIOD, &GPIO_InitStructure);									// this finally passes all the values to the GPIO_Init function which takes care of setting the corresponding bits.
 
 	// Configure I2C SCL and SDA pins.
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_9;					// refers to pins 6 and 9 as pins he's talking to and gives this value to the struct GPIO_Initstructure.
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;						// sets pinspeed and gives this value to the stuct GPIO_InitStructure.
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;							// sets pins to alternating function to use with I2C communication and gives this value to the struct GPIO_InitStructure.
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;							// sets the output type of the pins to Open Drain and gives this value to the struct GPIO_InitStructure.
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;						// choose no pull resistor and gives this value to the struct GPIO_InitStructure.
-	GPIO_Init(GPIOB, &GPIO_InitStructure);									// initialises port B with the values given to the struct GPIO_InitStructure.
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_9;					// we want to configure PB6 and PB9
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;						// this sets the GPIO modules clock speed
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;							// we want the pins to be in Alternating Function
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;							// this sets the pin type to open drain (as opposed to push / pull)
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;						// this sets the pullup / pulldown resistor to be inactive
+	GPIO_Init(GPIOB, &GPIO_InitStructure);									// this finally passees all the values to the GPIO_Init function which takes care of setting the corresponding bits.
 
 	GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_I2C1);					// configuarates pin 6 for the use of I2C communication.
 	GPIO_PinAFConfig(GPIOB, GPIO_PinSource9, GPIO_AF_I2C1);					// configuarates pin 9 for the use of I2C communication.
 
 	// Configure I2S MCK, SCK, SD pins.
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_10 | GPIO_Pin_12;	// refers to pins 7, 10 & 12 as pins he's talking to and gives this value to the sturct GPIO_InitStructure.
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;						// sets pinspeed and gives this value to this struct GPIO_InitStructure.
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;							// sets pins to alternating function to use with I2S communication and gives this value to the struct GPIO_InitStructure.
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;							// sets pushpull config for those pins and gives this value to the struct GPIO_InitStructure.
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;						// choose no pull resistor and gives this value to the struct GPIO_InitStructure.
-	GPIO_Init(GPIOC, &GPIO_InitStructure);									// initialises port C with the values given to the struct GPIO_InitStructure.
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_10 | GPIO_Pin_12;	// we want to configure PC7 | PC10 | PC12
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;						// this sets the GPIO modules clock speed
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;							// we want the pins to be in Alternating Function
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;							// this sets the pin type to push / pull (as opposed to open drain)
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;						// this sets the pullup / pulldown resistor to be inactive 
+	GPIO_Init(GPIOC, &GPIO_InitStructure);									// this finally passees all the values to the GPIO_Init function which takes care of setting the corresponding bits.
 
 	GPIO_PinAFConfig(GPIOC, GPIO_PinSource7, GPIO_AF_SPI3);					// configurates pin 7 of port C for the use of I2S communication.
 	GPIO_PinAFConfig(GPIOC, GPIO_PinSource10, GPIO_AF_SPI3);				// configurates pin 10 of port C for the use of I2S communication.
 	GPIO_PinAFConfig(GPIOC, GPIO_PinSource12, GPIO_AF_SPI3);				// configurates pin 12 of port C for the use of I2S communication.
 
-	// Configure I2S WaveSource pin.
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;								// refers to pin 4 as pin he's talking to and gives this value to the struct GPIO_InitStructure.
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;						// sets pinspeed and gives this value to the struct GPIO_InitStructure.
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;							// sets pint to alternating function and gives this value to the struct GPIO_InitStructure.
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;							// sets pushpull config and gives this value to the struct GPIO_InitStructure.
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;						// choos no pull resistor and gives this value to the struct GPIO_InitStructure.
-	GPIO_Init(GPIOA, &GPIO_InitStructure);									// initialises port A with the values given to the struct GPIO_InitStructure.
+	// Configure I2S WordSelect pin.
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;								// we want to configure PA4
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;						// this sets the GPIO modules clock speed
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;							// we want the pins to be in Alternating Function
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;							// this sets teh pin type to push / pull (as opposed to open drain)
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;						// this sets the pullup / pulldown  resistor to be inactive
+	GPIO_Init(GPIOA, &GPIO_InitStructure);									// this finally passees all the values to the GPIO_Init function which takes care of setting the corresponding bits.
 
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource4, GPIO_AF_SPI3);					// configuarates pin 4 on port A to use as WaveSource pin.
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource4, GPIO_AF_SPI3);					// configuarates PA4 to use as WordSelect pin.
 
 	// Reset the codec.
 	GPIOD ->BSRRH = 1 << 4;
