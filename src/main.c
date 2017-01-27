@@ -139,19 +139,30 @@ void init() {
 	// GPIOD Periph clock enable
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
 
-	/* 
-	* Configure PD12, PD13, PD14 and PD15 in output pushpull mode
-	* Configure PD12 (LED x), PD13 (LED y), PD14 (LET z) and PD15 (LED q) (standard (push/pull) output 100Mhz)
-	* Push-Pull: This is the output type that most people think of as "standard". When the output goes low, it is actively "pulled" to ground. 
+	/* Push-Pull: This is the output type that most people think of as "standard". When the output goes low, it is actively "pulled" to ground. 
 	* Conversely, when the output is set to high, it is actively "pushed" toward Vcc
 	*/
+	
+	/* This TypeDef is a structure defined in the
+	 * ST's library and it contains all the properties
+	 * the corresponding peripheral has, such as output mode,
+	 * pullup / pulldown resistors etc.
+	 * 
+	 * These structures are defined for every peripheral so 
+	 * every peripheral has it's own TypeDef. The good news is
+	 * they always work the same so once you've got a hang
+	 * of it you can initialize any peripheral.
+	 * 
+	 * The properties of the periperals can be found in the corresponding
+	 * header file e.g. stm32f4xx_gpio.h and the source file stm32f4xx_gpio.c
+	 */
 
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_13| GPIO_Pin_14| GPIO_Pin_15;	
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;										
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;										
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;									
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;									
-	GPIO_Init(GPIOD, &GPIO_InitStructure);												
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_13| GPIO_Pin_14| GPIO_Pin_15;	// we want to configure all LED GPIO pins
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;										// we want the pins to be an output
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;										// this sets the pin type to push / pull (as opposed to open drain)
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;									// this sets the GPIO modules clock speed
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;									// this sets the pullup / pulldown resistors to be inactive
+	GPIO_Init(GPIOD, &GPIO_InitStructure);												// this finally passes all the values to the GPIO_Init function which takes care of setting the corresponding bits.
 
 	// ------ UART ------ //
 
@@ -166,24 +177,24 @@ void init() {
 	*/
 	
 	// IO
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6;								
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;									
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;										
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;										
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;										
-	GPIO_Init(GPIOD, &GPIO_InitStructure);												
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6;								// we want to configure PD5 and PD6
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;									// this sets the GPIO modules clock speed
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;										// we want the pins to be in Alternating Function
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;										// this sets the pullup / pulldown resistors to be active
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;										// this enables the pullup resistor (we want to detact a low level)
+	GPIO_Init(GPIOD, &GPIO_InitStructure);												// this finally passes all the values to the GPIO_Init function which takes care of setting the corresponding bits.
 
-	GPIO_PinAFConfig(GPIOD, GPIO_PinSource5, GPIO_AF_USART1);							//
-	GPIO_PinAFConfig(GPIOD, GPIO_PinSource6, GPIO_AF_USART1);							//
+	GPIO_PinAFConfig(GPIOD, GPIO_PinSource5, GPIO_AF_USART1);							// this configures PD5 as USART pin
+	GPIO_PinAFConfig(GPIOD, GPIO_PinSource6, GPIO_AF_USART1);							// this configures PD6 as USART pin
 
 	// Conf
-	USART_InitStructure.USART_BaudRate = 115200;										// sets BaudRate at 115200 
-	USART_InitStructure.USART_WordLength = USART_WordLength_8b;							// sets the USART Word Length at 8 bits
-	USART_InitStructure.USART_StopBits = USART_StopBits_1;								// sets the stop bit 
-	USART_InitStructure.USART_Parity = USART_Parity_No;									// sets the Parity to NO 
-	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;		// sets hardware flow control to NONE
+	USART_InitStructure.USART_BaudRate = 115200;										// this sets the USART's BaudRate at 115200 
+	USART_InitStructure.USART_WordLength = USART_WordLength_8b;							// this sets the USART's Word Length at 8 bits
+	USART_InitStructure.USART_StopBits = USART_StopBits_1;								// this sets the stop bit 
+	USART_InitStructure.USART_Parity = USART_Parity_No;									// in this case a parity bit is not needed so it is set to NO
+	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;		// in this case there is no need for hardware flowcontrol so it is set to None
 	USART_InitStructure.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;						// sets the USART mode to Transmitting and Receiving
-	USART_Init(USART2, &USART_InitStructure);											// initialises USART2 
+	USART_Init(USART2, &USART_InitStructure);											// this finally passes all the values to the USART_Init function which takes care of setting the corresponding bits.
 
 	// Enable
 	USART_Cmd(USART2, ENABLE);															// Enables USART
