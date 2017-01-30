@@ -66,8 +66,8 @@ void InitializeAudio(int plln, int pllr, int i2sdiv, int i2sodd) {
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;						// this sets the pullup / pulldown resistor to be inactive
 	GPIO_Init(GPIOB, &GPIO_InitStructure);									// this finally passees all the values to the GPIO_Init function which takes care of setting the corresponding bits.
 
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_I2C1);					// configuarates pin 6 for the use of I2C communication.
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource9, GPIO_AF_I2C1);					// configuarates pin 9 for the use of I2C communication.
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_I2C1);					// configuarates pin 6 for the use of I2C communication. SCL or SDA?
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource9, GPIO_AF_I2C1);					// configuarates pin 9 for the use of I2C communication. SCL or SDA?
 
 	// Configure I2S MCK, SCK, SD pins.
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_10 | GPIO_Pin_12;	// we want to configure PC7 | PC10 | PC12
@@ -99,7 +99,7 @@ void InitializeAudio(int plln, int pllr, int i2sdiv, int i2sodd) {
 	GPIOD ->BSRRL = 1 << 4;
 
 	// Reset I2C.
-	RCC_APB1PeriphResetCmd(RCC_APB1Periph_I2C1, ENABLE);
+	RCC_APB1PeriphResetCmd(RCC_APB1Periph_I2C1, ENABLE);			
 	RCC_APB1PeriphResetCmd(RCC_APB1Periph_I2C1, DISABLE);
 
 	// Configure I2C.
@@ -107,7 +107,7 @@ void InitializeAudio(int plln, int pllr, int i2sdiv, int i2sodd) {
 
 	I2C1 ->CR2 = pclk1 / 1000000; // Configure frequency and disable interrupts and DMA.
 	I2C1 ->OAR1 = I2C_OAR1_ADDMODE | 0x33;
-
+    
 	// Configure I2C speed in standard mode.
 	const uint32_t i2c_speed = 100000;
 	int ccrspeed = pclk1 / (i2c_speed * 2);
@@ -121,7 +121,7 @@ void InitializeAudio(int plln, int pllr, int i2sdiv, int i2sodd) {
 
 	// Configure codec.
 	WriteRegister(0x02, 0x01); // Keep codec powered off.
-	WriteRegister(0x04, 0xaf); // SPK always off and HP always on.
+	WriteRegister(0x04, 0xaf); // SPK always off and HP always on.  what is SPK and what is HP?
 
 	WriteRegister(0x05, 0x81); // Clock configuration: Auto detection.
 	WriteRegister(0x06, 0x04); // Set slave mode and Philips audio standard.
@@ -141,6 +141,11 @@ void InitializeAudio(int plln, int pllr, int i2sdiv, int i2sodd) {
 	WriteRegister(0x1a, 0x0a); // Adjust PCM volume level.
 	WriteRegister(0x1b, 0x0a);
 
+/* I2S is a popular 3 wire serial bus standard protocol developed by Philips for transmission of 2 channel (stereo) Pulse Code Modulation digital data,
+ * where each audio sample is sent MSB first. I2S signals consist of a bit-clock, Left/Right Clock (also is often referred to as the Word Select)
+ * and alternating left and right channel data. This protocol can be compared to synchronous serial ports in TDM mode with 2 timeslots (or channels) active.
+ * This multiplexed protocol requires only 1 data path to send/receive 2 channels of digital audio information.
+*/
 	// Disable I2S.
 	SPI3 ->I2SCFGR = 0;
 
@@ -156,14 +161,14 @@ void InitializeAudio(int plln, int pllr, int i2sdiv, int i2sodd) {
 	// Configure I2S.
 	SPI3 ->I2SPR = i2sdiv | (i2sodd << 8) | SPI_I2SPR_MCKOE;
 	SPI3 ->I2SCFGR = SPI_I2SCFGR_I2SMOD | SPI_I2SCFGR_I2SCFG_1
-			| SPI_I2SCFGR_I2SE; // Master transmitter, Phillips mode, 16 bit values, clock polarity low, enable.
+			| SPI_I2SCFGR_I2SE; // Master transmitter, Philips mode, 16 bit values, clock polarity low, enable.
 
 }
 
 void AudioOn() {
 	WriteRegister(0x02, 0x9e);
 	SPI3 ->I2SCFGR = SPI_I2SCFGR_I2SMOD | SPI_I2SCFGR_I2SCFG_1
-			| SPI_I2SCFGR_I2SE; // Master transmitter, Phillips mode, 16 bit values, clock polarity low, enable.
+			| SPI_I2SCFGR_I2SE; // Master transmitter, Philips mode, 16 bit values, clock polarity low, enable.
 }
 
 void AudioOff() {
@@ -281,7 +286,7 @@ static void StartAudioDMAAndRequestBuffers() {
 }
 
 static void StopAudioDMA() {
-	DMA1_Stream7 ->CR &= ~DMA_SxCR_EN; // Disable DMA stream.
+	DMA1_Stream7 ->CR &= ~DMA_SxCR_EN; // Disable Direct Memory Access stream.
 	while (DMA1_Stream7 ->CR & DMA_SxCR_EN )
 		; // Wait for DMA stream to stop.
 
