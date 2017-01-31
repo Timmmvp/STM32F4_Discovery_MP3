@@ -22,7 +22,7 @@ endif
 
 ###################################################
 
-BINPATH=/c/gcc-arm/6.2-2016q4/bin
+BINPATH=/c/utils/gcc-arm/bin
 CC=$(BINPATH)/arm-none-eabi-gcc
 OBJCOPY=$(BINPATH)/arm-none-eabi-objcopy
 SIZE=$(BINPATH)/arm-none-eabi-size

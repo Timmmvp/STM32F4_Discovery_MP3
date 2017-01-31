@@ -187,17 +187,6 @@ void init() {
 	GPIO_PinAFConfig(GPIOD, GPIO_PinSource5, GPIO_AF_USART1);							// this configures PD5 as USART pin
 	GPIO_PinAFConfig(GPIOD, GPIO_PinSource6, GPIO_AF_USART1);							// this configures PD6 as USART pin
 
-	// Conf
-	USART_InitStructure.USART_BaudRate = 115200;										// this sets the USART's BaudRate at 115200 
-	USART_InitStructure.USART_WordLength = USART_WordLength_8b;							// this sets the USART's Word Length at 8 bits
-	USART_InitStructure.USART_StopBits = USART_StopBits_1;								// this sets the stop bit 
-	USART_InitStructure.USART_Parity = USART_Parity_No;									// in this case a parity bit is not needed so it is set to NO
-	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;		// in this case there is no need for hardware flowcontrol so it is set to None
-	USART_InitStructure.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;						// sets the USART mode to Transmitting and Receiving
-	USART_Init(USART2, &USART_InitStructure);											// this finally passes all the values to the USART_Init function which takes care of setting the corresponding bits.
-
-	// Enable
-	USART_Cmd(USART2, ENABLE);															// Enables USART
 }
 
 /*
