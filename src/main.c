@@ -7,7 +7,7 @@
 #include "mp3dec.h"
 
 // Private variables
-volatile uint32_t time_var1, time_var2;
+volatile uint32_t time_var1;
 MP3FrameInfo mp3FrameInfo;
 HMP3Decoder hMP3Decoder;
 
@@ -69,7 +69,7 @@ int main(void) {
 static void AudioCallback(void *context, int buffer) {
 	static int16_t audio_buffer0[4096];
 	static int16_t audio_buffer1[4096];
-
+	static int led = 0;
 	int offset, err;
 	int outOfData = 0;
 	static const char *read_ptr = mp3_data;
@@ -160,18 +160,7 @@ void init() {
 	* Configure PD5 and PD6 (standard push/pull output 100MHz)
 	* Enables the Pullup  resistor
 	*/
-/*	
-	// IO
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6;								// we want to configure PD5 and PD6
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;									// this sets the GPIO modules clock speed
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;										// we want the pins to be in Alternating Function
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;										// this sets the pullup / pulldown resistors to be active
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;										// this enables the pullup resistor (we want to detact a low level)
-	GPIO_Init(GPIOD, &GPIO_InitStructure);												// this finally passes all the values to the GPIO_Init function which takes care of setting the corresponding bits.
 
-	GPIO_PinAFConfig(GPIOD, GPIO_PinSource5, GPIO_AF_USART1);							// this configures PD5 as USART pin
-	GPIO_PinAFConfig(GPIOD, GPIO_PinSource6, GPIO_AF_USART1);							// this configures PD6 as USART pin
-*/
 }
 
 /*
@@ -182,7 +171,6 @@ void timing_handler() {
 		time_var1--;
 	}
 
-	time_var2++;
 }
 
 /*
