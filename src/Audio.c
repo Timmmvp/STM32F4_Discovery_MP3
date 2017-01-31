@@ -51,7 +51,7 @@ void InitializeAudio(int plln, int pllr, int i2sdiv, int i2sodd) {
 	 */
 	
 	// Configure reset pin.
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;;								// we want to configure PD4
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;								// we want to configure PD4
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;							// we want the pin to be an output 
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;							// this sets the pin type to push / pull (as opposed to open drain)
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;						// this sets the GPIO modules clock speed
@@ -66,8 +66,8 @@ void InitializeAudio(int plln, int pllr, int i2sdiv, int i2sodd) {
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;						// this sets the pullup / pulldown resistor to be inactive
 	GPIO_Init(GPIOB, &GPIO_InitStructure);									// this finally passees all the values to the GPIO_Init function which takes care of setting the corresponding bits.
 
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_I2C1);					// configuarates pin 6 for the use of I2C communication. SCL or SDA?
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource9, GPIO_AF_I2C1);					// configuarates pin 9 for the use of I2C communication. SCL or SDA?
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_I2C1);					// configuarates pin 6 for the use of I2C communication.
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource9, GPIO_AF_I2C1);					// configuarates pin 9 for the use of I2C communication.
 
 	// Configure I2S MCK, SCK, SD pins.
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_10 | GPIO_Pin_12;	// we want to configure PC7 | PC10 | PC12

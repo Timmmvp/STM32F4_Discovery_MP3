@@ -9,8 +9,8 @@
 #include "mp3_data.h"
 
 // Private variables
-MP3FrameInfo mp3FrameInfo;
-HMP3Decoder hMP3Decoder;
+MP3FrameInfo mp3FrameInfo = {0};
+HMP3Decoder hMP3Decoder = NULL;
 
 // Private function prototypes
 static void AudioCallback(void *context,int buffer);
@@ -23,14 +23,18 @@ void init();
 #define LED_RED		2
 #define LED_BLUE	3
 
+#define VOLUME_HIGH 0xCF
+#define VOLUME_LOW	0xAF
+
+
 int main(void) {
 	init();
-	int volume = 0;
+	int volume = VOLUME_HIGH;
 
 	// Play mp3
 	hMP3Decoder = MP3InitDecoder();
 	InitializeAudio(Audio44100HzSettings);
-	SetAudioVolume(0xCF);
+	SetAudioVolume(volume);
 	PlayAudioWithCallback(AudioCallback, 0);
 
 	for(;;) {
@@ -43,14 +47,8 @@ int main(void) {
 			if (BUTTON) {
 
 				// Toggle audio volume
-				if (volume) {
-					volume = 0;
-					SetAudioVolume(0xCF);
-				} else {
-					volume = 1;
-					SetAudioVolume(0xAF);
-				}
-
+				volume = (volume == VOLUME_HIGH ? VOLUME_LOW : VOLUME_HIGH);
+				SetAudioVolume(volume);
 
 				while(BUTTON){};
 			}
@@ -67,15 +65,15 @@ int main(void) {
  * provided to the audio driver.
  */
 static void AudioCallback(void *context, int buffer) {
-	static int16_t audio_buffer0[4096];
-	static int16_t audio_buffer1[4096];
+	static int16_t audio_buffer0[4096] = {0};
+	static int16_t audio_buffer1[4096] = {0};
 	static int led = 0;
-	int offset, err;
+	int offset = 0, err = 0;
 	int outOfData = 0;
 	static const char *read_ptr = mp3_data;
 	static int bytes_left = MP3_DATA_SIZE;
 
-	int16_t *samples;
+	int16_t *samples = NULL;
 
 	if (buffer) {
 		samples = audio_buffer0;
@@ -166,13 +164,6 @@ void init() {
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;									// this sets the GPIO modules clock speed
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;									// this sets the pullup / pulldown resistors to be inactive
 	GPIO_Init(GPIOD, &GPIO_InitStructure);												// this finally passes all the values to the GPIO_Init function which takes care of setting the corresponding bits.
-
-	// ------ UART ------ //
-
-	// Clock
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);								// Enables the Low Speed APB ((APB1)advanced peripheral bus) peripheral clock.
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
-
 }
 
 /*
