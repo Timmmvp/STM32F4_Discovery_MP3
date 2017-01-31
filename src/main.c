@@ -5,22 +5,18 @@
 #include "stm32f4xx_conf.h"
 #include "Audio.h"
 #include "mp3dec.h"
+#include "timer.h"
+#include "mp3_data.h"
 
 // Private variables
-volatile uint32_t time_var1;
 MP3FrameInfo mp3FrameInfo;
 HMP3Decoder hMP3Decoder;
 
 // Private function prototypes
 static void AudioCallback(void *context,int buffer);
-void Delay(volatile uint32_t nCount);
 void init();
 
-// External variables
-extern const char mp3_data[];
-
 // Some macros
-#define MP3_SIZE	687348
 #define BUTTON		(GPIOA->IDR & GPIO_Pin_0)
 #define LED_GREEN 	0
 #define LED_ORANGE	1
@@ -77,18 +73,15 @@ static void AudioCallback(void *context, int buffer) {
 	int offset, err;
 	int outOfData = 0;
 	static const char *read_ptr = mp3_data;
-	static int bytes_left = MP3_SIZE;
+	static int bytes_left = MP3_DATA_SIZE;
 
 	int16_t *samples;
 
 	if (buffer) {
 		samples = audio_buffer0;
-		//GPIO_SetBits(GPIOD, GPIO_Pin_13);												// when buffer0 is active pin_13 is HIGH
-		//GPIO_ResetBits(GPIOD, GPIO_Pin_14);												// when buffer0 is active pin_14 is LOW
-	} else {
+	}
+	else {
 		samples = audio_buffer1;
-		//GPIO_SetBits(GPIOD, GPIO_Pin_14);												// when buffer1 is active pin_14 is HIGH
-		//GPIO_ResetBits(GPIOD, GPIO_Pin_13);												// when buffer1 is active pin_13 is LOW
 	}
 	switch (led){
 		case LED_GREEN: 
@@ -117,7 +110,7 @@ static void AudioCallback(void *context, int buffer) {
 
 	if (bytes_left <= 10000) {
 		read_ptr = mp3_data;
-		bytes_left = MP3_SIZE;
+		bytes_left = MP3_DATA_SIZE;
 		offset = MP3FindSyncWord((unsigned char*)read_ptr, bytes_left);
 	}
 
@@ -180,31 +173,6 @@ void init() {
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);								// Enables the Low Speed APB ((APB1)advanced peripheral bus) peripheral clock.
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 
-	/*
-	* Configure PD5 and PD6 in alternating pushpull function
-	* Configure PD5 and PD6 (standard push/pull output 100MHz)
-	* Enables the Pullup  resistor
-	*/
-
-}
-
-/*
- * Called from systick handler
- */
-void timing_handler() {
-	if (time_var1) {
-		time_var1--;
-	}
-
-}
-
-/*
- * Delay a number of systick cycles
- */
-void Delay(volatile uint32_t nCount) {
-	time_var1 = nCount;
-
-	while(time_var1){};
 }
 
 /*
