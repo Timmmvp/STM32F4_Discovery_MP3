@@ -22,6 +22,10 @@ extern const char mp3_data[];
 // Some macros
 #define MP3_SIZE	687348
 #define BUTTON		(GPIOA->IDR & GPIO_Pin_0)
+#define LED_GREEN 	0
+#define LED_ORANGE	1
+#define LED_RED		2
+#define LED_BLUE	3
 
 int main(void) {
 	init();
@@ -87,25 +91,25 @@ static void AudioCallback(void *context, int buffer) {
 		//GPIO_ResetBits(GPIOD, GPIO_Pin_13);												// when buffer1 is active pin_13 is LOW
 	}
 	switch (led){
-		case 0: 
+		case LED_GREEN: 
 			GPIO_SetBits(GPIOD, GPIO_Pin_12);
 			GPIO_ResetBits(GPIOD, GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15);
-			led++;
+			led = LED_ORANGE;
 			break;
-		case 1:
+		case LED_ORANGE:
 			GPIO_SetBits(GPIOD, GPIO_Pin_13);
 			GPIO_ResetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_14 | GPIO_Pin_15);
-			led++;
+			led = LED_RED;
 			break;
-		case 2: 
+		case LED_RED: 
 			GPIO_SetBits(GPIOD, GPIO_Pin_14);
 			GPIO_ResetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_15);
-			led++;
+			led = LED_BLUE;
 			break;
 		default: 
 			GPIO_SetBits(GPIOD, GPIO_Pin_15);
 			GPIO_ResetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14);
-			led = 0;
+			led = LED_GREEN;
 			break;
 	}
 	offset = MP3FindSyncWord((unsigned char*)read_ptr, bytes_left);
