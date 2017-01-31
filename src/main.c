@@ -126,7 +126,7 @@ static void AudioCallback(void *context, int buffer) {
 
 void init() {
 	GPIO_InitTypeDef  GPIO_InitStructure;
-	USART_InitTypeDef USART_InitStructure;
+	
 	// ---------- SysTick timer -------- //
 	if (SysTick_Config(SystemCoreClock / 1000)) {
 		// Capture error
@@ -143,20 +143,6 @@ void init() {
 	* Conversely, when the output is set to high, it is actively "pushed" toward Vcc
 	*/
 	
-	/* This TypeDef is a structure defined in the
-	 * ST's library and it contains all the properties
-	 * the corresponding peripheral has, such as output mode,
-	 * pullup / pulldown resistors etc.
-	 * 
-	 * These structures are defined for every peripheral so 
-	 * every peripheral has it's own TypeDef. The good news is
-	 * they always work the same so once you've got a hang
-	 * of it you can initialize any peripheral.
-	 * 
-	 * The properties of the periperals can be found in the corresponding
-	 * header file e.g. stm32f4xx_gpio.h and the source file stm32f4xx_gpio.c
-	 */
-
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_13| GPIO_Pin_14| GPIO_Pin_15;	// we want to configure all LED GPIO pins
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;										// we want the pins to be an output
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;										// this sets the pin type to push / pull (as opposed to open drain)
@@ -175,7 +161,7 @@ void init() {
 	* Configure PD5 and PD6 (standard push/pull output 100MHz)
 	* Enables the Pullup  resistor
 	*/
-	
+/*	
 	// IO
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6;								// we want to configure PD5 and PD6
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;									// this sets the GPIO modules clock speed
@@ -186,7 +172,7 @@ void init() {
 
 	GPIO_PinAFConfig(GPIOD, GPIO_PinSource5, GPIO_AF_USART1);							// this configures PD5 as USART pin
 	GPIO_PinAFConfig(GPIOD, GPIO_PinSource6, GPIO_AF_USART1);							// this configures PD6 as USART pin
-
+*/
 }
 
 /*
