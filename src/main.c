@@ -79,14 +79,35 @@ static void AudioCallback(void *context, int buffer) {
 
 	if (buffer) {
 		samples = audio_buffer0;
-		GPIO_SetBits(GPIOD, GPIO_Pin_13);												// when buffer0 is active pin_13 is HIGH
-		GPIO_ResetBits(GPIOD, GPIO_Pin_14);												// when buffer0 is active pin_14 is LOW
+		//GPIO_SetBits(GPIOD, GPIO_Pin_13);												// when buffer0 is active pin_13 is HIGH
+		//GPIO_ResetBits(GPIOD, GPIO_Pin_14);												// when buffer0 is active pin_14 is LOW
 	} else {
 		samples = audio_buffer1;
-		GPIO_SetBits(GPIOD, GPIO_Pin_14);												// when buffer1 is active pin_14 is HIGH
-		GPIO_ResetBits(GPIOD, GPIO_Pin_13);												// when buffer1 is active pin_13 is LOW
+		//GPIO_SetBits(GPIOD, GPIO_Pin_14);												// when buffer1 is active pin_14 is HIGH
+		//GPIO_ResetBits(GPIOD, GPIO_Pin_13);												// when buffer1 is active pin_13 is LOW
 	}
-
+	switch (led){
+		case 0: 
+			GPIO_SetBits(GPIOD, GPIO_Pin_12);
+			GPIO_ResetBits(GPIOD, GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15);
+			led++;
+			break;
+		case 1:
+			GPIO_SetBits(GPIOD, GPIO_Pin_13);
+			GPIO_ResetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_14 | GPIO_Pin_15);
+			led++;
+			break;
+		case 2: 
+			GPIO_SetBits(GPIOD, GPIO_Pin_14);
+			GPIO_ResetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_15);
+			led++;
+			break;
+		default: 
+			GPIO_SetBits(GPIOD, GPIO_Pin_15);
+			GPIO_ResetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14);
+			led = 0;
+			break;
+	}
 	offset = MP3FindSyncWord((unsigned char*)read_ptr, bytes_left);
 	bytes_left -= offset;
 
